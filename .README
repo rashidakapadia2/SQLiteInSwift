@@ -1,0 +1,100 @@
+.README FILE
+Import SQLite3 in swift view controller
+
+Create a database in device (local)
+Using opaque pointer and initially setting it to nil
+
+Create a table in database
+Another opaque pointer in table
+Giving table a name(Userinformation) and writing query to create table only if it doesn’t already exist
+Compiling the SQLite_prepare and checking it with sql result success code i.e. SQLITE_OK
+
+To save data
+Create a function and input all parameters to be inserted 
+Write query to insert said parameters
+Set opaque pointer to nil
+Putting the SQLite_prepare query in an if else to check if the query preparation was a success or not.
+Compiling the SQLite_prepare and checking it with sql result success code i.e. SQLITE_OK
+SQLite bind the data in database
+Putting the SQLite_step query in an if else block to print whether the data insertion operation was a success or a failure.
+Compiling the SQLite_step and  checking it with sql result success code i.e. SQLITE_DONE
+Finalising the query to deallocate memory avoiding any resource leaks
+
+READ query
+Create a function with a completion handler giving out data of type USER model
+Write query to read all data from table with said tablename
+Set opaque pointer to nil
+Putting the SQLite_prepare query in an if else to check if the query preparation was a success or not.
+Compiling the SQLite_prepare and checking it with sql result success code i.e. SQLITE_OK
+Inserting a while loop compile SQLite_step query to insert data in SQLite_row
+Inserting parameter data one by one in each SQLite column with pre-defined type and position
+Incase of data being an integer, we prefix “Int” keyword before the statement and “String” before the string statement datatype
+In string datatype we need to convert data from cString which is a string in C-language compilation to swift type string statement
+Declaring a variable of data type USER model which is the single output required of array output type.
+Appending the model to the Array of USER model to get the entire output.
+Ending the while loop statement and returning the completion handler with the mainList
+
+UPDATE query 
+Create a function and input all parameters to be inserted (the parameters are same as INSERT query)
+Write query to update data in table with said tablename
+Set opaque pointer to nil
+Putting the SQLite_prepare query in an if else to check if the query preparation was a success or not.
+Compiling the SQLite_prepare and checking it with sql result success code i.e. SQLITE_OK
+Putting the SQLite_step query in an if else block to print whether the data updation operation was a success or a failure.
+Compiling the SQLite_step and  checking it with sql result success code i.e. SQLITE_DONE
+Finalising the query to deallocate memory avoiding any resource leaks
+
+DELETE query 
+Create a function with only one input parameter based on which the identification happens and the entire row of data can be deleted.
+Write query to delete row in table
+Set opaque pointer to nil
+Putting the SQLite_prepare query in an if else to check if the query preparation was a success or not
+Compiling the SQLite_prepare and checking it with sql result success code i.e. SQLITE_OK
+Putting the SQLite_step query in an if else block to print whether the data deletion operation was a success or a failure.
+Compiling the SQLite_step and  checking it with sql result success code i.e. SQLITE_DONE
+Finalising the query to deallocate memory avoiding any resource leaks
+
+————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+
+Refactoring Code to make it DYNAMIC and REUSABLE
+
+Created proper folders and files
+Created extensions and refactored code into them to follow Single Responsibility Principle
+Created a separate Database Manager and Database Services class.
+Made the Database Manager class a singleton.
+Added protocol to Database Services class, ViewModel to loosely couple the classes according to the Dependency Inversion Principle.
+Added comments to improve user readability.
+Using MVVM architecture pattern.
+Added models instead of many parameters to pass to function params.
+Handled the statement functions of SQL query for different data types.
+Optional values in SQL handled, it is safely accepting and returning nil values to and from SQL database.
+
+————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+
+How to use in your own project : —
+
+Import Database Manager and Database Services class files into one’s project.
+1] One can give the database file name by calling <getDatabaseName> function from anywhere in their project as it is an open function. Give your custom database name and extension. 
+Note: If you skip this step, the default database name is <UserInformation> and the default extension is <sqlite3> so a file with fileName <UserInfromation.sqlite3> will get created.
+
+2] Create a table or an enum of multiple tables and pass table name in Database Services class in a constant property named <tableName>
+
+3] Creating a database and table is done internally once one accesses Database Services into any of the files in one’s project i.e. it need not be handled by the user of this module.
+
+4] To access read, insert, update and delete functions, define a lazy var property and give it the database protocol type <DatabaseServicesType> and value of instance of Database Services <DatabaseServices.shared> and one can access all four protocols in their current class by accessing that property with the “.” syntax
+
+5] Import TableModel and CommonEnums into project (CommonEnums for reference)
+Make a model for the type of data one wants to make table and create an array to define the structure of the Table just once in DatabaseServices —> private let userTable , using <QueryModel> 
+
+6] The table model also has to be passed in <userInformation> to create the structure of columns with datatypes and values. It has to be done in databaseServices file just once
+
+————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+
+Tips : —
+1] Inside custom table model create a mutating function and map values of model to data inside the struct(model) itself. This will be easier to get singular data from the database and pass it to viewController.
+
+2] In delete query, there can be n number of permutations and combinations and therefore the last half of the query has to be written according to usage and requirements. Write this in your viewModel (if MVVM) or interactor (if VIPER) preferably and pass it as a parameter in the delete function of Database Services file in string format
+
+3] The closures return success or failure, Incase of success only read returns complete data while failure returns string.
+ 
+
